@@ -3,7 +3,7 @@
 import type { TransactionType } from "@/lib/types"
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { CheckCircleIcon } from "lucide-react"
+import { CheckCircleIcon, XIcon } from "lucide-react"
 
 interface StatusBannerProps {
   transactions: TransactionType[]
@@ -12,6 +12,9 @@ interface StatusBannerProps {
 export function StatusBanner({ transactions }: StatusBannerProps) {
   const [showBanner, setShowBanner] = useState(false)
   const [lastCompletedTx, setLastCompletedTx] = useState<TransactionType | null>(null)
+  const [isVisible, setIsVisible] = useState(true)
+
+  const handleClose = () => setIsVisible(false)
 
   useEffect(() => {
     // Check if there's a newly completed transaction
@@ -30,7 +33,7 @@ export function StatusBanner({ transactions }: StatusBannerProps) {
     }
   }, [transactions, lastCompletedTx])
 
-  if (!showBanner || !lastCompletedTx) return null
+  if (!showBanner || !lastCompletedTx || !isVisible) return null
 
   return (
     <AnimatePresence>
@@ -44,13 +47,20 @@ export function StatusBanner({ transactions }: StatusBannerProps) {
           <div className="bg-emerald-500 rounded-full p-2 mt-1">
             <CheckCircleIcon className="h-5 w-5 text-emerald-950" />
           </div>
-          <div>
+          <div className="flex-1">
             <h3 className="font-medium">Transaction Completed</h3>
             <p className="text-sm text-emerald-200 mt-1">
               Received ₹{lastCompletedTx.details?.amount?.toFixed(2)} from {lastCompletedTx.details?.sender}
             </p>
             <p className="text-xs text-emerald-300/70 mt-2 font-mono">{lastCompletedTx.transaction_id}</p>
           </div>
+          <button
+            onClick={handleClose}
+            className="text-emerald-300 hover:text-emerald-100 transition-colors"
+            aria-label="Close notification"
+          >
+            <XIcon className="h-5 w-5" />
+          </button>
         </div>
       </motion.div>
     </AnimatePresence>
